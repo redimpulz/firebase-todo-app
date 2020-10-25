@@ -1,210 +1,161 @@
-import React from 'react';
-import Head from 'next/head';
+import React, { useState, useEffect } from 'react';
+import { Button, Switch } from 'antd';
+import {
+  CloseOutlined,
+  CheckOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons';
+import { parseISO } from 'date-fns';
 
-export default function Home() {
+import Header from '@/components/atoms/Header';
+import Space from '@/components/atoms/Space';
+
+import firestore from '@/lib/db';
+
+type Todo = {
+  id: string;
+  todo: string;
+  isComplete: boolean;
+  date: string;
+};
+
+const Index: React.FC = () => {
+  // state
+  const [todo, setTodo] = useState('');
+  const [todos, setTodos] = useState<Todo[]>([]);
+
+  const addTodo = () => {
+    if (todo) {
+      firestore.collection('todos').add({
+        todo,
+        isComplete: false,
+        date: new Date(),
+      });
+      setTodo('');
+    }
+  };
+
+  const onTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (typeof e.target.value !== 'string') return;
+    setTodo(e.target.value);
+  };
+
+  useEffect(() => {
+    firestore.collection('todos').onSnapshot((collection) => {
+      const data = collection.docs.map((doc) => ({
+        id: doc.id,
+        todo: doc.data().todo as string,
+        isComplete: doc.data().isComplete as boolean,
+        date: doc.data().date as string,
+      }));
+      setTodos(data);
+    });
+  }, []);
+
+  const onTodoStatusChange = (id: string, checked: boolean) => {
+    const target = todos.find((x) => x.id === id);
+    if (target)
+      firestore
+        .collection('todos')
+        .doc(id)
+        .update({ ...target, isComplete: checked });
+  };
+
+  const onDelete = (id: string) => {
+    const target = todos.find((x) => x.id === id);
+    if (target) firestore.collection('todos').doc(id).delete();
+  };
+
+  const sortedTodos = todos.sort((a, b) =>
+    parseISO(a.date) > parseISO(b.date) ? 1 : 0
+  );
+
   return (
-    <div className="container">
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+    <div className="container mx-auto">
+      <Header>Firebase TODO App</Header>
+      <Space />
 
-      <main>
-        <h1 className="title">
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className="description">
-          Get started by editing <code>pages/index.js</code>
-        </p>
-
-        <div className="grid">
-          <a href="https://nextjs.org/docs" className="card">
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className="card">
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/zeit/next.js/tree/master/examples"
-            className="card"
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className="card"
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+      <div className="mt-10 sm:mt-0">
+        <div className="shadow overflow-hidden sm:rounded-md">
+          <div className="px-4 py-5 bg-white sm:p-6">
+            <div className="grid grid-cols-6 gap-6">
+              <div className="col-span-6">
+                <label
+                  htmlFor="street_address"
+                  className="block text-sm font-medium leading-5 text-gray-700"
+                >
+                  Todo
+                </label>
+                <input
+                  id="todo"
+                  className="mt-1 form-input block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  placeholder="Add Todo"
+                  value={todo}
+                  onChange={onTextChange}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
+            <Button type="primary" onClick={addTodo}>
+              Add
+            </Button>
+          </div>
         </div>
-      </main>
 
-      <footer>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className="logo" />
-        </a>
-      </footer>
+        <Space />
 
-      <style jsx>{`
-        .container {
-          min-height: 100vh;
-          padding: 0 0.5rem;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-
-        main {
-          padding: 5rem 0;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-
-        footer {
-          width: 100%;
-          height: 100px;
-          border-top: 1px solid #eaeaea;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        footer img {
-          margin-left: 0.5rem;
-        }
-
-        footer a {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        a {
-          color: inherit;
-          text-decoration: none;
-        }
-
-        .title a {
-          color: #0070f3;
-          text-decoration: none;
-        }
-
-        .title a:hover,
-        .title a:focus,
-        .title a:active {
-          text-decoration: underline;
-        }
-
-        .title {
-          margin: 0;
-          line-height: 1.15;
-          font-size: 4rem;
-        }
-
-        .title,
-        .description {
-          text-align: center;
-        }
-
-        .description {
-          line-height: 1.5;
-          font-size: 1.5rem;
-        }
-
-        code {
-          background: #fafafa;
-          border-radius: 5px;
-          padding: 0.75rem;
-          font-size: 1.1rem;
-          font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-            DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
-        }
-
-        .grid {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-wrap: wrap;
-
-          max-width: 800px;
-          margin-top: 3rem;
-        }
-
-        .card {
-          margin: 1rem;
-          flex-basis: 45%;
-          padding: 1.5rem;
-          text-align: left;
-          color: inherit;
-          text-decoration: none;
-          border: 1px solid #eaeaea;
-          border-radius: 10px;
-          transition: color 0.15s ease, border-color 0.15s ease;
-        }
-
-        .card:hover,
-        .card:focus,
-        .card:active {
-          color: #0070f3;
-          border-color: #0070f3;
-        }
-
-        .card h3 {
-          margin: 0 0 1rem 0;
-          font-size: 1.5rem;
-        }
-
-        .card p {
-          margin: 0;
-          font-size: 1.25rem;
-          line-height: 1.5;
-        }
-
-        .logo {
-          height: 1em;
-        }
-
-        @media (max-width: 600px) {
-          .grid {
-            width: 100%;
-            flex-direction: column;
-          }
-        }
-      `}</style>
-
-      <style jsx global>{`
-        html,
-        body {
-          padding: 0;
-          margin: 0;
-          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
-            Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
-            sans-serif;
-        }
-
-        * {
-          box-sizing: border-box;
-        }
-      `}</style>
+        <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr>
+                <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                  Task
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {sortedTodos.map((x, i: number) => (
+                <tr key={i}>
+                  <td className="px-6 py-4 whitespace-no-wrap">
+                    <div className="flex items-center">
+                      <div className="ml-4">
+                        <Switch
+                          checkedChildren={<CheckOutlined />}
+                          unCheckedChildren={<CloseOutlined />}
+                          defaultChecked
+                          checked={x.isComplete}
+                          onChange={(checked) =>
+                            onTodoStatusChange(x.id, checked)
+                          }
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-no-wrap">
+                    <div className="text-sm leading-5 text-gray-900">
+                      {x.todo}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-no-wrap text-right text-sm leading-5 font-medium">
+                    <Button
+                      type="dashed"
+                      shape="circle"
+                      icon={<DeleteOutlined />}
+                      onClick={() => onDelete(x.id)}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
-}
+};
+
+export default Index;
