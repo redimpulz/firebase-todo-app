@@ -7,11 +7,6 @@ import Form from './Form';
 import Table from './Table';
 
 const Index: React.FC = () => {
-  const layout = {
-    labelCol: { span: 8 },
-    wrapperCol: { span: 16 },
-  };
-
   // state
   const [task, setTask] = useState('');
 
@@ -30,17 +25,16 @@ const Index: React.FC = () => {
     setTask(e.target.value);
 
   return (
-    <div>
+    <>
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         <div className="form-wrap">
-          <Form value={task} onChange={handleToDoTextChange} {...layout} />
+          <Form value={task} onChange={handleToDoTextChange} />
           <div className="btn-wrap">
             <Button type="primary" onClick={addTodo}>
               Add
             </Button>
           </div>
         </div>
-
         <Table />
       </Space>
       <style jsx>{`
@@ -57,7 +51,7 @@ const Index: React.FC = () => {
           justify-content: flex-end;
         }
       `}</style>
-    </div>
+    </>
   );
 };
 

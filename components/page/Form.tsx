@@ -6,9 +6,11 @@ type Props = InputProps;
 
 const Form: React.FC<Props> = (props) => {
   return (
-    <div className="input-wrap">
-      <label>Todo:</label>
-      <Input id="todo" placeholder="Add Todo" {...props} />
+    <>
+      <div className="input-wrap">
+        <label>Todo:</label>
+        <Input id="todo" placeholder="Add Todo" {...props} />
+      </div>
       <style jsx>{`
         .input-wrap {
           display: flex;
@@ -20,7 +22,7 @@ const Form: React.FC<Props> = (props) => {
           width: 10%;
         }
       `}</style>
-    </div>
+    </>
   );
 };
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { isBefore } from 'date-fns';
 import { Table as AntTable, Switch, Button } from 'antd';
+import { ColumnsType } from 'antd/lib/table';
 import {
   CloseOutlined,
   CheckOutlined,
@@ -8,6 +9,49 @@ import {
 } from '@ant-design/icons';
 
 import { db } from '@/lib/firestore';
+
+const createColumns = (
+  handleTodoStatusChange: (id: string, checked: boolean) => void,
+  handleDelete: (id: string) => void
+): ColumnsType<TodoItem> => [
+  {
+    title: 'Status',
+    dataIndex: 'status',
+    key: 'status',
+    render: (_, record) => {
+      const el = (
+        <Switch
+          checkedChildren={<CheckOutlined />}
+          unCheckedChildren={<CloseOutlined />}
+          defaultChecked
+          checked={record.isComplete}
+          onChange={(checked) => handleTodoStatusChange(record.id, checked)}
+        />
+      );
+      return el;
+    },
+  },
+  {
+    title: 'Task',
+    dataIndex: 'todo',
+    key: 'todo',
+  },
+  {
+    dataIndex: 'delete',
+    key: 'delete',
+    render: (_, record) => {
+      const el = (
+        <Button
+          type="dashed"
+          shape="circle"
+          icon={<DeleteOutlined />}
+          onClick={() => handleDelete(record.id)}
+        />
+      );
+      return el;
+    },
+  },
+];
 
 type TodoItem = {
   id: string;
@@ -47,49 +91,14 @@ const Table: React.FC = () => {
     if (target) db.collection('todos').doc(id).delete();
   };
 
-  const createSwitch = (_: unknown, record: TodoItem) => (
-    <Switch
-      checkedChildren={<CheckOutlined />}
-      unCheckedChildren={<CloseOutlined />}
-      defaultChecked
-      checked={record.isComplete}
-      onChange={(checked) => handleTodoStatusChange(record.id, checked)}
-    />
-  );
-
-  const createDelete = (_: unknown, record: TodoItem) => (
-    <Button
-      type="dashed"
-      shape="circle"
-      icon={<DeleteOutlined />}
-      onClick={() => handleDelete(record.id)}
-    />
-  );
-
-  const columns = [
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      render: createSwitch,
-    },
-    {
-      title: 'Task',
-      dataIndex: 'todo',
-      key: 'todo',
-    },
-    {
-      dataIndex: 'delete',
-      key: 'delete',
-      render: createDelete,
-    },
-  ];
-
   const sortedTodos = todos.sort((a, b) => (isBefore(a.date, b.date) ? -1 : 1));
 
-  const dataSource = sortedTodos;
-
-  return <AntTable dataSource={dataSource} columns={columns} />;
+  return (
+    <AntTable
+      dataSource={sortedTodos}
+      columns={createColumns(handleTodoStatusChange, handleDelete)}
+    />
+  );
 };
 
 export default Table;
