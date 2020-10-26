@@ -1,8 +1,3 @@
-interface Window {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: Function;
-}
-
 declare namespace NodeJS {
   interface ProcessEnv {
     readonly NEXT_PUBLIC_FIREBASE_API_KEY: string;
