@@ -1,8 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { isBefore } from 'date-fns';
+import { Table as AntTable, Switch, Button } from 'antd';
+import {
+  CloseOutlined,
+  CheckOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons';
 
 import { db } from '@/lib/firestore';
-import Todo, { TodoItem } from '@/components/organisms/Todo';
+
+type TodoItem = {
+  id: string;
+  todo: string;
+  isComplete: boolean;
+  date: Date;
+};
 
 const Table: React.FC = () => {
   // state
@@ -35,34 +47,49 @@ const Table: React.FC = () => {
     if (target) db.collection('todos').doc(id).delete();
   };
 
+  const createSwitch = (_: unknown, record: TodoItem) => (
+    <Switch
+      checkedChildren={<CheckOutlined />}
+      unCheckedChildren={<CloseOutlined />}
+      defaultChecked
+      checked={record.isComplete}
+      onChange={(checked) => handleTodoStatusChange(record.id, checked)}
+    />
+  );
+
+  const createDelete = (_: unknown, record: TodoItem) => (
+    <Button
+      type="dashed"
+      shape="circle"
+      icon={<DeleteOutlined />}
+      onClick={() => handleDelete(record.id)}
+    />
+  );
+
+  const columns = [
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      render: createSwitch,
+    },
+    {
+      title: 'Task',
+      dataIndex: 'todo',
+      key: 'todo',
+    },
+    {
+      dataIndex: 'delete',
+      key: 'delete',
+      render: createDelete,
+    },
+  ];
+
   const sortedTodos = todos.sort((a, b) => (isBefore(a.date, b.date) ? -1 : 1));
 
-  return (
-    <>
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead>
-          <tr>
-            <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Status
-            </th>
-            <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Task
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {sortedTodos.map((x) => (
-            <Todo
-              key={x.id}
-              todoItem={x}
-              onSwitchChange={handleTodoStatusChange}
-              onButtonClick={handleDelete}
-            />
-          ))}
-        </tbody>
-      </table>
-    </>
-  );
+  const dataSource = sortedTodos;
+
+  return <AntTable dataSource={dataSource} columns={columns} />;
 };
 
 export default Table;

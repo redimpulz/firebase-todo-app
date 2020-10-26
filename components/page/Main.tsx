@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
-import { Button } from 'antd';
+import { Button, Space } from 'antd';
 
 import { db } from '@/lib/firestore';
 
-import Space from '@/components/atoms/Space';
 import Form from './Form';
 import Table from './Table';
 
 const Index: React.FC = () => {
+  const layout = {
+    labelCol: { span: 8 },
+    wrapperCol: { span: 16 },
+  };
+
   // state
   const [task, setTask] = useState('');
 
@@ -26,24 +30,34 @@ const Index: React.FC = () => {
     setTask(e.target.value);
 
   return (
-    <>
-      <div className="mt-10 sm:mt-0">
-        <div className="shadow overflow-hidden sm:rounded-md">
-          <Form value={task} onChange={handleToDoTextChange} />
-          <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
+    <div>
+      <Space direction="vertical" size="large" style={{ width: '100%' }}>
+        <div className="form-wrap">
+          <Form value={task} onChange={handleToDoTextChange} {...layout} />
+          <div className="btn-wrap">
             <Button type="primary" onClick={addTodo}>
               Add
             </Button>
           </div>
         </div>
 
-        <Space />
-
-        <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-          <Table />
-        </div>
-      </div>
-    </>
+        <Table />
+      </Space>
+      <style jsx>{`
+        .form-wrap {
+          display: flex;
+          flex-direction: column;
+          margin-bottom: 5%;
+          padding: 3rem;
+          background-color: white;
+        }
+        .btn-wrap {
+          margin-top: 1rem;
+          display: flex;
+          justify-content: flex-end;
+        }
+      `}</style>
+    </div>
   );
 };
 
