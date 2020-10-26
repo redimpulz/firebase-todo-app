@@ -10,7 +10,7 @@ import { parseISO } from 'date-fns';
 import Header from '@/components/atoms/Header';
 import Space from '@/components/atoms/Space';
 
-import firestore from '@/lib/db';
+import firestore from '@/lib/firestore';
 
 type Todo = {
   id: string;
@@ -21,25 +21,10 @@ type Todo = {
 
 const Index: React.FC = () => {
   // state
-  const [todo, setTodo] = useState('');
+  const [task, setTask] = useState('');
   const [todos, setTodos] = useState<Todo[]>([]);
 
-  const addTodo = () => {
-    if (todo) {
-      firestore.collection('todos').add({
-        todo,
-        isComplete: false,
-        date: new Date(),
-      });
-      setTodo('');
-    }
-  };
-
-  const onTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (typeof e.target.value !== 'string') return;
-    setTodo(e.target.value);
-  };
-
+  // init
   useEffect(() => {
     firestore.collection('todos').onSnapshot((collection) => {
       const data = collection.docs.map((doc) => ({
@@ -51,6 +36,20 @@ const Index: React.FC = () => {
       setTodos(data);
     });
   }, []);
+
+  const addTodo = () => {
+    if (task) {
+      firestore.collection('todos').add({
+        todo: task,
+        isComplete: false,
+        date: new Date(),
+      });
+      setTask('');
+    }
+  };
+
+  const onToDoTextChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setTask(e.target.value);
 
   const onTodoStatusChange = (id: string, checked: boolean) => {
     const target = todos.find((x) => x.id === id);
@@ -80,18 +79,15 @@ const Index: React.FC = () => {
           <div className="px-4 py-5 bg-white sm:p-6">
             <div className="grid grid-cols-6 gap-6">
               <div className="col-span-6">
-                <label
-                  htmlFor="street_address"
-                  className="block text-sm font-medium leading-5 text-gray-700"
-                >
+                <label className="block text-sm font-medium leading-5 text-gray-700">
                   Todo
                 </label>
                 <input
                   id="todo"
                   className="mt-1 form-input block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
                   placeholder="Add Todo"
-                  value={todo}
-                  onChange={onTextChange}
+                  value={task}
+                  onChange={onToDoTextChange}
                 />
               </div>
             </div>
