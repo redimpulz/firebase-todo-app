@@ -1,5 +1,9 @@
 # firebase-todo-app
 
+![firebase-todo-app](public/screenShot_1.png "firebase-todo-app")
+
+## 環境構築
+
 ```sh
 # clone してディレクトリ移動
 git clone git@github.com:SotaYamaguchi/firebase-todo-app.git
@@ -19,7 +23,7 @@ yarn
 
 以下、firebaseConfig参考画像
 
-![firebaseConfig](public/screenShot.jpg "firebaseConfig")
+![firebaseConfig](public/screenShot_2.jpg "firebaseConfig")
 
 ## コマンド
 
