@@ -6,7 +6,7 @@ import { db } from '@/lib/firestore';
 import Form from './Form';
 import Table from './Table';
 
-const Index: React.FC = () => {
+const Main: React.FC = () => {
   // state
   const [task, setTask] = useState('');
 
@@ -55,4 +55,4 @@ const Index: React.FC = () => {
   );
 };
 
-export default Index;
+export default Main;

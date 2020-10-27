@@ -3,7 +3,7 @@ import { AppProps } from 'next/app';
 
 import 'antd/dist/antd.css';
 
-import Layout from '@/components/organisms/BaseLayout';
+import Layout from '@/components/organisms/Layout';
 
 const MyApp = (app: AppProps) => {
   const { Component, pageProps } = app;
