@@ -21,14 +21,11 @@ const Main: React.FC = () => {
     }
   };
 
-  const handleToDoTextChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setTask(e.target.value);
-
   return (
     <>
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         <div className="form-wrap">
-          <Form value={task} onChange={handleToDoTextChange} />
+          <Form value={task} onChange={({ target }) => setTask(target.value)} />
           <div className="btn-wrap">
             <Button type="primary" onClick={addTodo}>
               Add
