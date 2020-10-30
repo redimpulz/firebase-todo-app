@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { isBefore } from 'date-fns';
+import { isBefore, formatISO } from 'date-fns';
 import { Table as AntTable, Switch, Button } from 'antd';
-import { ColumnsType } from 'antd/lib/table';
+import { ColumnsType } from 'antd/lib/table/interface';
 import {
   CloseOutlined,
   CheckOutlined,
@@ -10,22 +10,21 @@ import {
 
 import { db } from '@/lib/firestore';
 
-const createColumns = (
-  handleTodoStatusChange: (id: string, checked: boolean) => void,
-  handleDelete: (id: string) => void
-): ColumnsType<TodoItem> => [
+const columns: ColumnsType<TodoItem> = [
   {
     title: 'Status',
     dataIndex: 'status',
     key: 'status',
-    render: (_, record) => {
+    render: (_, { id, isComplete }) => {
       const el = (
         <Switch
           checkedChildren={<CheckOutlined />}
           unCheckedChildren={<CloseOutlined />}
           defaultChecked
-          checked={record.isComplete}
-          onChange={(checked) => handleTodoStatusChange(record.id, checked)}
+          checked={isComplete}
+          onChange={(checked) =>
+            db.collection('todos').doc(id).update({ isComplete: checked })
+          }
         />
       );
       return el;
@@ -37,15 +36,21 @@ const createColumns = (
     key: 'todo',
   },
   {
+    title: 'Created',
+    dataIndex: 'date',
+    key: 'date',
+    render: (_, { date }) => formatISO(date),
+  },
+  {
     dataIndex: 'delete',
     key: 'delete',
-    render: (_, record) => {
+    render: (_, { id }) => {
       const el = (
         <Button
           type="dashed"
           shape="circle"
           icon={<DeleteOutlined />}
-          onClick={() => handleDelete(record.id)}
+          onClick={() => db.collection('todos').doc(id).delete()}
         />
       );
       return el;
@@ -71,34 +76,15 @@ const Table: React.FC = () => {
         id: doc.id,
         todo: doc.data().todo,
         isComplete: doc.data().isComplete,
-        date: doc.data().date,
+        date: doc.data().date.toDate(),
       }));
       setTodos(data);
     });
   }, []);
 
-  const handleTodoStatusChange = async (id: string, checked: boolean) => {
-    const target = todos.find((x) => x.id === id);
-    if (target)
-      await db
-        .collection('todos')
-        .doc(id)
-        .update({ ...target, isComplete: checked });
-  };
+  const sortedTodos = todos.sort((a, b) => (isBefore(a.date, b.date) ? 1 : -1));
 
-  const handleDelete = (id: string) => {
-    const target = todos.find((x) => x.id === id);
-    if (target) db.collection('todos').doc(id).delete();
-  };
-
-  const sortedTodos = todos.sort((a, b) => (isBefore(a.date, b.date) ? -1 : 1));
-
-  return (
-    <AntTable
-      dataSource={sortedTodos}
-      columns={createColumns(handleTodoStatusChange, handleDelete)}
-    />
-  );
+  return <AntTable rowKey="id" dataSource={sortedTodos} columns={columns} />;
 };
 
 export default Table;
