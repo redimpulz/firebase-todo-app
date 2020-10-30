@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { isBefore, format, formatISO } from 'date-fns';
+import { isBefore, formatISO } from 'date-fns';
 import { Table as AntTable, Switch, Button } from 'antd';
 import { ColumnsType } from 'antd/lib/table/interface';
 import {
