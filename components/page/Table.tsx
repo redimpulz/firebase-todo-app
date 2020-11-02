@@ -36,6 +36,14 @@ const columns: ColumnsType<TodoItem> = [
     title: 'Task',
     dataIndex: 'todo',
     key: 'todo',
+    render: (_, { todo, isComplete }) => {
+      const el = (
+        <div style={{ textDecoration: isComplete ? 'line-through' : 'none' }}>
+          {todo}
+        </div>
+      );
+      return el;
+    },
   },
   {
     title: 'Created',
