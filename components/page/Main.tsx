@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Button, Space } from 'antd';
+import React from 'react';
+import { Space } from 'antd';
 
 import { db } from '@/lib/firestore';
 
@@ -7,30 +7,18 @@ import Form from './Form';
 import Table from './Table';
 
 const Main: React.FC = () => {
-  // state
-  const [task, setTask] = useState('');
-
-  const addTodo = async () => {
-    if (task) {
-      await db.collection('todos').add({
-        todo: task,
-        isComplete: false,
-        date: new Date(),
-      });
-      setTask('');
-    }
-  };
+  const addTodo = async (todo: string) =>
+    await db.collection('todos').add({
+      todo: todo,
+      isComplete: false,
+      date: new Date(),
+    });
 
   return (
     <>
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         <div className="form-wrap">
-          <Form value={task} onChange={({ target }) => setTask(target.value)} />
-          <div className="btn-wrap">
-            <Button type="primary" onClick={addTodo}>
-              Add
-            </Button>
-          </div>
+          <Form onSubmit={({ todo }) => addTodo(todo)} />
         </div>
         <Table />
       </Space>

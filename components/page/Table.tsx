@@ -8,7 +8,9 @@ import {
   DeleteOutlined,
 } from '@ant-design/icons';
 
+import Edit from '@/components/molecules/Edit';
 import { db } from '@/lib/firestore';
+import { TodoItem } from '@/types/todo';
 
 const columns: ColumnsType<TodoItem> = [
   {
@@ -42,6 +44,14 @@ const columns: ColumnsType<TodoItem> = [
     render: (_, { date }) => formatISO(date),
   },
   {
+    dataIndex: 'edit',
+    key: 'edit',
+    render: (_, todo) => {
+      const el = <Edit todoItem={todo} />;
+      return el;
+    },
+  },
+  {
     dataIndex: 'delete',
     key: 'delete',
     render: (_, { id }) => {
@@ -57,13 +67,6 @@ const columns: ColumnsType<TodoItem> = [
     },
   },
 ];
-
-type TodoItem = {
-  id: string;
-  todo: string;
-  isComplete: boolean;
-  date: Date;
-};
 
 const Table: React.FC = () => {
   // state
