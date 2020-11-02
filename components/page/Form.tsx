@@ -23,20 +23,23 @@ const Form: React.FC<Props> = ({ onSubmit, todo, resetFlag }) => {
   const btnTitle = todo ? 'update' : 'Add';
 
   return (
-    <AntForm form={form} initialValues={initialValues} onFinish={onSubmit}>
-      <AntForm.Item
-        className="input-wrap"
-        label="Todo:"
-        name="todo"
-        rules={[{ required: true, message: 'Todoを入力してください!' }]}
-      >
-        <Input placeholder="Add Todo" />
-      </AntForm.Item>
-      <div className="btn-wrap">
-        <Button type="primary" htmlType="submit">
-          {btnTitle}
-        </Button>
-      </div>
+    <>
+      <AntForm form={form} initialValues={initialValues} onFinish={onSubmit}>
+        <AntForm.Item
+          className="input-wrap"
+          label="Todo"
+          name="todo"
+          rules={[{ required: true, message: 'Todoを入力してください' }]}
+        >
+          <Input placeholder="Add Todo" />
+        </AntForm.Item>
+        <div className="btn-wrap">
+          <Button type="primary" htmlType="submit">
+            {btnTitle}
+          </Button>
+        </div>
+      </AntForm>
+
       <style jsx>{`
         .btn-wrap {
           margin-top: 1rem;
@@ -50,7 +53,7 @@ const Form: React.FC<Props> = ({ onSubmit, todo, resetFlag }) => {
           width: 100%;
         }
       `}</style>
-    </AntForm>
+    </>
   );
 };
 
