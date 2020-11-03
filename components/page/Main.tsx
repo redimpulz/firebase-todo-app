@@ -3,22 +3,21 @@ import { Space } from 'antd';
 
 import { db } from '@/lib/firestore';
 
-import Form from './Form';
+import Form from '@/components/molecules/Form';
 import Table from './Table';
 
 const Main: React.FC = () => {
-  const addTodo = async (todo: string) =>
-    await db.collection('todos').add({
+  const addTodo = (todo: string) =>
+    db.collection('todos').add({
       todo: todo,
       isComplete: false,
       date: new Date(),
     });
-
   return (
     <>
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         <div className="form-wrap">
-          <Form onSubmit={({ todo }) => addTodo(todo)} />
+          <Form onSubmit={addTodo} />
         </div>
         <Table />
       </Space>

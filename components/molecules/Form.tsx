@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Form as AntForm, Input, Button } from 'antd';
 
 const initialValues = {
@@ -6,25 +6,21 @@ const initialValues = {
 };
 
 type Props = {
-  onSubmit: (value: typeof initialValues) => void;
+  onSubmit: (todo: string) => Promise<unknown>;
   todo?: string;
-  resetFlag?: boolean;
 };
 
-const Form: React.FC<Props> = ({ onSubmit, todo, resetFlag }) => {
+const Form: React.FC<Props> = ({ onSubmit, todo = initialValues.todo }) => {
   const [form] = AntForm.useForm();
 
-  useEffect(() => {
-    resetFlag && form.resetFields();
-  }, [resetFlag]);
-
-  initialValues.todo = todo || '';
-
-  const btnTitle = todo ? 'update' : 'Add';
+  const handleFinish = async ({ todo }: typeof initialValues) => {
+    await onSubmit(todo);
+    form.resetFields();
+  };
 
   return (
     <>
-      <AntForm form={form} initialValues={initialValues} onFinish={onSubmit}>
+      <AntForm form={form} initialValues={{ todo }} onFinish={handleFinish}>
         <AntForm.Item
           className="input-wrap"
           label="Todo"
@@ -35,7 +31,7 @@ const Form: React.FC<Props> = ({ onSubmit, todo, resetFlag }) => {
         </AntForm.Item>
         <div className="btn-wrap">
           <Button type="primary" htmlType="submit">
-            {btnTitle}
+            {todo ? 'update' : 'Add'}
           </Button>
         </div>
       </AntForm>
