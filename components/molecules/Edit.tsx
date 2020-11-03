@@ -3,8 +3,8 @@ import { Modal, Button } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 
 import { db } from '@/lib/firestore';
-import Form from '@/components/page/Form';
-import { TodoItem } from '@/types/todo';
+import Form from '@/components/molecules/Form';
+import { Todo as TodoItem } from '@/types/todo';
 
 type Props = {
   todoItem: TodoItem;
@@ -23,18 +23,20 @@ const Edit: React.FC<Props> = ({ todoItem }) => {
     setIsOpen(false);
   };
 
-  const handleOpen = () => setIsOpen(true);
-  const handleClose = () => setIsOpen(false);
-
   return (
     <>
-      <Button shape="circle" icon={<EditOutlined />} onClick={handleOpen} />
-      <Modal title="Edit" visible={isOpen} onCancel={handleClose} footer={null}>
-        <Form
-          todo={todoItem.todo}
-          onSubmit={({ todo }) => updateTodo(todo)}
-          resetFlag={isOpen}
-        />
+      <Button
+        shape="circle"
+        icon={<EditOutlined />}
+        onClick={() => setIsOpen(true)}
+      />
+      <Modal
+        title="Edit"
+        visible={isOpen}
+        onCancel={() => setIsOpen(false)}
+        footer={null}
+      >
+        {isOpen && <Form onSubmit={updateTodo} todo={todoItem.todo} />}
       </Modal>
     </>
   );

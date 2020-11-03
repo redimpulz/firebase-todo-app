@@ -10,9 +10,9 @@ import {
 
 import Edit from '@/components/molecules/Edit';
 import { db } from '@/lib/firestore';
-import { TodoItem } from '@/types/todo';
+import { Todo } from '@/types/todo';
 
-const columns: ColumnsType<TodoItem> = [
+const columns: ColumnsType<Todo> = [
   {
     title: 'Status',
     dataIndex: 'status',
@@ -52,6 +52,7 @@ const columns: ColumnsType<TodoItem> = [
     render: (_, { date }) => formatISO(date),
   },
   {
+    title: 'edit',
     dataIndex: 'edit',
     key: 'edit',
     render: (_, todo) => {
@@ -60,6 +61,7 @@ const columns: ColumnsType<TodoItem> = [
     },
   },
   {
+    title: 'delete',
     dataIndex: 'delete',
     key: 'delete',
     render: (_, { id }) => {
@@ -78,12 +80,12 @@ const columns: ColumnsType<TodoItem> = [
 
 const Table: React.FC = () => {
   // state
-  const [todos, setTodos] = useState<TodoItem[]>([]);
+  const [todos, setTodos] = useState<Todo[]>([]);
 
   // init
   useEffect(() => {
     db.collection('todos').onSnapshot((collection) => {
-      const data = collection.docs.map<TodoItem>((doc) => ({
+      const data = collection.docs.map<Todo>((doc) => ({
         id: doc.id,
         todo: doc.data().todo,
         isComplete: doc.data().isComplete,
