@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Modal, Button } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 
-import { db } from '@/lib/firestore';
+import { firestore } from '@/lib/firebase';
 import Form from '@/components/molecules/Form';
 import { Todo as TodoItem } from '@/types/todo';
 
@@ -15,7 +15,7 @@ const Edit: React.FC<Props> = ({ todoItem }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const updateTodo = async (todo: string) => {
-    await db.collection('todos').doc(todoItem.id).update({
+    await firestore.collection('todos').doc(todoItem.id).update({
       todo: todo,
       isComplete: todoItem.isComplete,
       date: todoItem.date,

@@ -1,18 +1,19 @@
 import React from 'react';
 import { Space } from 'antd';
 
-import { db } from '@/lib/firestore';
+import { firestore } from '@/lib/firebase';
 
 import Form from '@/components/molecules/Form';
 import Table from './Table';
 
 const Main: React.FC = () => {
   const addTodo = (todo: string) =>
-    db.collection('todos').add({
+    firestore.collection('todos').add({
       todo: todo,
       isComplete: false,
       date: new Date(),
     });
+
   return (
     <>
       <Space direction="vertical" size="large" style={{ width: '100%' }}>

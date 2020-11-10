@@ -9,7 +9,8 @@ import {
 } from '@ant-design/icons';
 
 import Edit from '@/components/molecules/Edit';
-import { db } from '@/lib/firestore';
+
+import { firestore } from '@/lib/firebase';
 import { Todo } from '@/types/todo';
 
 const columns: ColumnsType<Todo> = [
@@ -25,7 +26,10 @@ const columns: ColumnsType<Todo> = [
           defaultChecked
           checked={isComplete}
           onChange={(checked) =>
-            db.collection('todos').doc(id).update({ isComplete: checked })
+            firestore
+              .collection('todos')
+              .doc(id)
+              .update({ isComplete: checked })
           }
         />
       );
@@ -70,7 +74,7 @@ const columns: ColumnsType<Todo> = [
           type="dashed"
           shape="circle"
           icon={<DeleteOutlined />}
-          onClick={() => db.collection('todos').doc(id).delete()}
+          onClick={() => firestore.collection('todos').doc(id).delete()}
         />
       );
       return el;
@@ -84,7 +88,7 @@ const Table: React.FC = () => {
 
   // init
   useEffect(() => {
-    db.collection('todos').onSnapshot((collection) => {
+    firestore.collection('todos').onSnapshot((collection) => {
       const data = collection.docs.map<Todo>((doc) => ({
         id: doc.id,
         todo: doc.data().todo,
