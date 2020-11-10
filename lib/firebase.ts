@@ -14,4 +14,4 @@ firebase.apps.length
       measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
     });
 
-export const db = firebase.firestore();
+export const firestore = firebase.firestore();
