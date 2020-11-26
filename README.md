@@ -16,7 +16,7 @@ yarn
 
 # FirebaseコンソールからFirebaseアプリを作成
 
-# ウェブアプリを作成しfirebaseConfigの情報をを.envファイルに貼り付ける
+# ウェブアプリを作成しfirebaseConfigの情報を.envファイルに貼り付ける
 ```
 
 - [Firebaseコンソール](https://console.firebase.google.com/)
