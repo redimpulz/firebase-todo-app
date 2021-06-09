@@ -35,3 +35,11 @@ yarn dev
 
 - topページ
   - <http://localhost:3000>
+
+### デプロイ
+
+```sh
+yarn build
+yarn export
+firebase deploy --only hosting
+```
